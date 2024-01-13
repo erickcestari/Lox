@@ -40,7 +40,7 @@ class Scanner {
     this.source = source;
   }
 
-  List<Token> scanTokens() {
+  public List<Token> scanTokens() {
     while (!isAtEnd()) {
       // We are at the beginning of the next lexeme.
       start = current;
@@ -101,10 +101,13 @@ class Scanner {
           // A comment goes until the end of the line.
           while (peek() != '\n' && !isAtEnd())
             advance();
-        } else if (match('*')) {
-          while (peek() != '*' && !match('/') && !isAtEnd()) {
+          } else if (match('*')) {
+            while (!(peek() == '*' && peekNext() == '/') && !isAtEnd()) {
+              advance();
+
+            }
             advance();
-          }
+            advance();
         } else {
           addToken(SLASH);
         }
