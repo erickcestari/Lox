@@ -1,11 +1,14 @@
 package lox;
 
-class Interpreter implements Expr.Visitor<Object> {
+import java.util.List;
 
-  void interpret(Expr expression) { 
+class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+
+  void interpret(List<Stmt> statements) {
     try {
-      Object value = evaluate(expression);
-      System.out.println(stringify(value));
+      for (Stmt statement : statements) {
+        execute(statement);
+      }
     } catch (RuntimeError error) {
       Lox.runtimeError(error);
     }
@@ -81,6 +84,24 @@ throw new RuntimeError(operator, "Operands must be numbers.");
     return expr.accept(this);
   }
 
+  private void execute(Stmt stmt) {
+    stmt.accept(this);
+  }
+
+  @Override
+  public Void visitExpressionStmt(Stmt.Expression stmt) {
+    evaluate(stmt.expression);
+    return null;
+  }
+
+  @Override
+  public Void visitPrintStmt(Stmt.Print stmt) {
+    Object value = evaluate(stmt.expression);
+    System.out.println(stringify(value));
+    return null;
+  }
+
+
    @Override
   public Object visitBinaryExpr(Expr.Binary expr) {
     Object left = evaluate(expr.left);
@@ -105,6 +126,13 @@ throw new RuntimeError(operator, "Operands must be numbers.");
       case PLUS:
         if (left instanceof Double && right instanceof Double) {
           return (double)left + (double)right;
+        }
+
+        if (left instanceof String && right instanceof Double) {
+          return (String)left + stringify(right);
+        } 
+        if (left instanceof Double && right instanceof String) {
+          return stringify(right.toString()) + (double)right;
         } 
 
         if (left instanceof String && right instanceof String) {
