@@ -12,18 +12,21 @@ public class GenerateAst {
       System.exit(64);
     }
     String outputDir = args[0];
-    System.out.print(outputDir);
+    System.out.println(outputDir);
     defineAst(outputDir, "Expr", Arrays.asList(
         "Assign   : Token name, Expr value",
         "Binary   : Expr left, Token operator, Expr right",
         "Grouping : Expr expression",
         "Literal  : Object value",
+        "Logical  : Expr left, Token operator, Expr right",
         "Unary    : Token operator, Expr right",
         "Variable : Token name"));
 
     defineAst(outputDir, "Stmt", Arrays.asList(
         "Block      : List<Stmt> statements",
         "Expression : Expr expression",
+        "If         : Expr condition, Stmt thenBranch," +
+            " Stmt elseBranch",
         "Print      : Expr expression",
         "Var        : Token name, Expr initializer"));
   }
@@ -33,6 +36,7 @@ public class GenerateAst {
       throws IOException {
     String path = outputDir + "/" + baseName + ".java";
     PrintWriter writer = new PrintWriter(path, "UTF-8");
+    System.out.println(path);
 
     writer.println("package lox;");
     writer.println();
