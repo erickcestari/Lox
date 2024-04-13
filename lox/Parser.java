@@ -45,7 +45,7 @@ class Parser {
   }
 
   private Stmt statement() {
-    if (match(FOR)) return forStatement;
+    if (match(FOR)) return forStatement();
     if (match(IF))
       return ifStatement();
     if (match(PRINT))
