@@ -1,4 +1,5 @@
 package lox;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,9 +28,11 @@ public class Lox {
     byte[] bytes = Files.readAllBytes(Paths.get(path));
     run(new String(bytes, Charset.defaultCharset()));
 
-     // Indicate an error in the exit code.
-     if (hadError) System.exit(65);
-     if (hadRuntimeError) System.exit(70);
+    // Indicate an error in the exit code.
+    if (hadError)
+      System.exit(65);
+    if (hadRuntimeError)
+      System.exit(70);
   }
 
   private static void runPrompt() throws IOException {
@@ -54,8 +57,16 @@ public class Lox {
     List<Stmt> statements = parser.parse();
 
     // Stop if there was a syntax error.
-    if (hadError) return;
-    
+    if (hadError)
+      return;
+
+    Resolver resolver = new Resolver(interpreter);
+    resolver.resolve(statements);
+
+    // Stop if there was a resolution error.
+    if (hadError)
+      return;
+
     interpreter.interpret(statements);
   }
 
